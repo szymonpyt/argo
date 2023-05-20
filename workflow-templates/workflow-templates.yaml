@@ -1,0 +1,52 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: workflow-template-submittable
+  namespace: workflow
+spec:
+  entrypoint: whalesay-template
+  arguments:
+    parameters:
+      - name: message
+        value: hello world
+  templates:
+    - name: whalesay-template
+      inputs:
+        parameters:
+          - name: message
+      container:
+        image: docker/whalesay
+        command: [cowsay]
+        args: ["{{inputs.parameters.message}}"]
+---
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: bash-script
+  namespace: workflow
+spec:
+  ttlStrategy:
+    secondsAfterCompletion: 30 # Time to live after workflow is completed, replaces ttlSecondsAfterFinished
+    secondsAfterSuccess: 30     # Time to live after workflow is successful
+    secondsAfterFailure: 30
+  entrypoint: main
+  arguments:
+    parameters:
+      - name: date
+        # use "yesterday" is a magic value to tell the script it needs to determine the day to run
+        value: yesterday
+  templates:
+    - name: main
+      inputs:
+        parameters:
+          - name: date
+      script:
+        image: docker/whalesay:latest
+        command:
+          - sh
+        source: |
+          date="{{inputs.parameters.date}}"
+          if [ $date = yesterday ]; then
+            date=$(date -d yesterday +%Y-%m-%d)
+          fi
+          echo "run for $date"
