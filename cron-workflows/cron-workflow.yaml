@@ -1,0 +1,10 @@
+apiVersion: argoproj.io/v1alpha1
+kind: CronWorkflow
+metadata:
+  name: cron-job-test
+  namespace: workflow
+spec:
+  schedule: "*/2 * * * *"
+  workflowSpec:
+    workflowTemplateRef:
+      name: workflow-template-submittable
