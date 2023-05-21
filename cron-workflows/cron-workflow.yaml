@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: CronWorkflow
 metadata:
-  name: cron-job-test
+  name: cron-job-test-rename
   namespace: workflow
 spec:
   schedule: "*/2 * * * *"
